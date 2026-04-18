@@ -1,49 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>ResearchDesk | OSM to DXF</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#ff8c00' rx='20'/><text y='.9em' font-size='90' fill='white' font-family='sans-serif' font-weight='bold'>R</text><path d='M70 70 L90 70 L90 50 M90 70 L60 40' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     <style>
-        body { min-height: 150vh; display: flex; flex-direction: column; color: orange; background: white; margin: 0; }
-        nav { padding: 1rem; border-bottom: 2px solid orange; display: flex; gap: 10px; }
-        footer { padding: 1rem; border-top: 2px solid orange; margin-top: auto; }
-        .page { display: none; padding: 2rem; }
-        .active { display: block; }
+        :root { --accent: #ff8c00; }
+        body { font-family: sans-serif; background: white; color: #333; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { padding: 1.5rem 2rem; border-bottom: 1px solid #eee; display: flex; gap: 20px; align-items: center; }
+        nav a { color: var(--accent); text-decoration: none; font-weight: bold; }
+        main { padding: 2rem; max-width: 800px; margin: auto; }
+        .drop-zone { border: 2px dashed #e4e4e7; padding: 2rem; text-align: center; cursor: pointer; border-radius: 8px; }
+        .drop-zone.dragging { border-color: var(--accent); }
+        .btn { background: var(--accent); color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px; margin-top: 1rem; }
+        footer { padding: 1rem; border-top: 1px solid #eee; text-align: center; margin-top: auto; font-size: 0.8rem; }
     </style>
 </head>
 <body>
     <nav>
-        <a href="#" onclick="showPage('home')">Logo</a>
-        <a href="#" onclick="showPage('home')">Home</a>
-        <a href="#" onclick="showPage('inventory')">Inventory</a>
-        <a href="#" onclick="showPage('comparison')">Comparison</a>
+        <a href="/">ResearchDesk</a>
+        <a href="/">Home</a>
+        <a href="/">Inventory</a>
+        <a href="/">Comparison</a>
     </nav>
 
-    <main id="content">
-        <section id="home" class="page active">
-            <button id="startBtn">Start project</button>
-            <p>DXF used: DWG is proprietary format.</p>
-        </section>
-        <section id="inventory" class="page">
-            <h1>Inventory</h1>
-        </section>
-        <section id="comparison" class="page">
-            <h1>Comparison</h1>
-        </section>
+    <main>
+        <h1>Site Map Converter</h1>
+        <div class="drop-zone" id="dropZone">
+            <p>Drag & drop .osm file or click to browse</p>
+            <input type="file" id="osmFile" accept=".osm" style="display: none;">
+        </div>
+        <button class="btn" id="convertBtn" disabled>Convert and Download DXF</button>
+        <p id="status"></p>
     </main>
 
     <footer>
         <p>Copyright © 2026. All rights reserved.</p>
-        <p>Contact: info@site.com</p>
+        <p>Contact: info@researchdesk.com</p>
     </footer>
 
     <script>
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('osmFile');
+        const convertBtn = document.getElementById('convertBtn');
+        const status = document.getElementById('status');
+        let selectedFile = null;
+
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => handleFile(e.target.files[0]);
+        
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragging'); };
+        dropZone.ondragleave = () => dropZone.classList.remove('dragging');
+        dropZone.ondrop = (e) => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); };
+
+        function handleFile(file) {
+            if (!file) return;
+            selectedFile = file;
+            status.textContent = "Selected: " + file.name;
+            convertBtn.disabled = false;
         }
 
-        document.getElementById('startBtn').addEventListener('click', () => {
-            alert("Exporting DXF file.");
-        });
+        convertBtn.onclick = () => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(e.target.result, "text/xml");
+                const dxf = createDxf(xml);
+                const blob = new Blob([dxf], {type: 'text/plain'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "site_map.dxf";
+                a.click();
+            };
+            reader.readAsText(selectedFile);
+        };
+
+        function createDxf(xml) {
+            const nodes = {};
+            const xmlNodes = xml.getElementsByTagName("node");
+            for(let n of xmlNodes) nodes[n.getAttribute("id")] = { lat: n.getAttribute("lat"), lon: n.getAttribute("lon") };
+
+            let content = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n";
+            const ways = xml.getElementsByTagName("way");
+            
+            for(let way of ways) {
+                const refs = way.getElementsByTagName("nd");
+                if (refs.length < 2) continue;
+                content += "0\nPOLYLINE\n8\nOSM_LAYER\n66\n1\n";
+                for(let ref of refs) {
+                    const node = nodes[ref.getAttribute("ref")];
+                    if(node) content += `0\nVERTEX\n10\n${node.lon}\n20\n${node.lat}\n`;
+                }
+                content += "0\nSEQEND\n";
+            }
+            content += "0\nENDSEC\n0\nEOF";
+            return content;
+        }
     </script>
 </body>
 </html>
