@@ -2,41 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ResearchDesk | OSM to DXF</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#ff8c00' rx='20'/><text y='.9em' font-size='90' fill='white' font-family='sans-serif' font-weight='bold'>R</text><path d='M70 70 L90 70 L90 50 M90 70 L60 40' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <title>ResearchDesk | Site Converter</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23ff8c00' rx='20'/><text y='.9em' font-size='90' fill='white' font-family='sans-serif' font-weight='bold'>R</text><path d='M70 70 L90 70 L90 50 M90 70 L60 40' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     <style>
-        :root { --accent: #ff8c00; }
-        body { font-family: sans-serif; background: white; color: #333; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
-        nav { padding: 1.5rem 2rem; border-bottom: 1px solid #eee; display: flex; gap: 20px; align-items: center; }
-        nav a { color: var(--accent); text-decoration: none; font-weight: bold; }
-        main { padding: 2rem; max-width: 800px; margin: auto; }
-        .drop-zone { border: 2px dashed #e4e4e7; padding: 2rem; text-align: center; cursor: pointer; border-radius: 8px; }
-        .drop-zone.dragging { border-color: var(--accent); }
-        .btn { background: var(--accent); color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px; margin-top: 1rem; }
-        footer { padding: 1rem; border-top: 1px solid #eee; text-align: center; margin-top: auto; font-size: 0.8rem; }
+        :root { 
+            --accent: #ff8c00; 
+            --bg: #ffffff; 
+            --text: #1a1a1a; 
+            --subtle: #f4f4f4;
+            --border: #e0e0e0;
+        }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; min-height: 100vh; line-height: 1.6; }
+        
+        /* Nav */
+        nav { padding: 2rem 10%; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.05em; text-transform: uppercase; }
+        
+        /* Layout */
+        main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 4rem 10%; }
+        .card { width: 100%; max-width: 600px; padding: 3rem; background: #fff; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+        
+        h1 { font-weight: 300; font-size: 2.5rem; margin-bottom: 2rem; color: #000; }
+        
+        /* Dropzone */
+        .drop-zone { border: 2px dashed var(--border); padding: 3rem; margin-bottom: 2rem; cursor: pointer; transition: all 0.3s ease; border-radius: 4px; color: #888; }
+        .drop-zone:hover { border-color: var(--accent); background: var(--subtle); }
+        .drop-zone.dragging { border-color: var(--accent); background: #fffaf0; }
+        
+        /* Button */
+        .btn { 
+            background: var(--accent); color: white; padding: 1rem 3rem; border: none; cursor: pointer; 
+            font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
+            display: block; margin: 0 auto; transition: opacity 0.2s;
+        }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .btn:hover:not(:disabled) { opacity: 0.9; }
+
+        footer { padding: 2rem; text-align: center; color: #aaa; font-size: 0.75rem; letter-spacing: 0.1em; }
     </style>
 </head>
 <body>
     <nav>
         <a href="/">ResearchDesk</a>
-        <a href="/">Home</a>
-        <a href="/">Inventory</a>
-        <a href="/">Comparison</a>
+        <div>
+            <a href="/" style="margin-right: 20px;">Home</a>
+            <a href="/">Inventory</a>
+        </div>
     </nav>
 
     <main>
-        <h1>Site Map Converter</h1>
-        <div class="drop-zone" id="dropZone">
-            <p>Drag & drop .osm file or click to browse</p>
-            <input type="file" id="osmFile" accept=".osm" style="display: none;">
+        <div class="card">
+            <h1>Site Map Generator</h1>
+            <div class="drop-zone" id="dropZone">
+                <p>Drag & drop your .osm file here<br><span style="font-size: 0.8rem;">or click to select</span></p>
+                <input type="file" id="osmFile" accept=".osm" style="display: none;">
+            </div>
+            <button class="btn" id="convertBtn" disabled>Convert & Download</button>
+            <p id="status" style="margin-top: 1.5rem; font-size: 0.9rem; color: #666;"></p>
         </div>
-        <button class="btn" id="convertBtn" disabled>Convert and Download DXF</button>
-        <p id="status"></p>
     </main>
 
     <footer>
         <p>Copyright © 2026. All rights reserved.</p>
-        <p>Contact: info@researchdesk.com</p>
     </footer>
 
     <script>
@@ -48,7 +75,6 @@
 
         dropZone.onclick = () => fileInput.click();
         fileInput.onchange = (e) => handleFile(e.target.files[0]);
-        
         dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragging'); };
         dropZone.ondragleave = () => dropZone.classList.remove('dragging');
         dropZone.ondrop = (e) => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); };
@@ -56,20 +82,17 @@
         function handleFile(file) {
             if (!file) return;
             selectedFile = file;
-            status.textContent = "Selected: " + file.name;
+            status.textContent = "File ready: " + file.name;
             convertBtn.disabled = false;
         }
 
         convertBtn.onclick = () => {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const parser = new DOMParser();
-                const xml = parser.parseFromString(e.target.result, "text/xml");
-                const dxf = createDxf(xml);
-                const blob = new Blob([dxf], {type: 'text/plain'});
-                const url = URL.createObjectURL(blob);
+                const xml = new DOMParser().parseFromString(e.target.result, "text/xml");
+                const blob = new Blob([createDxf(xml)], {type: 'text/plain'});
                 const a = document.createElement('a');
-                a.href = url;
+                a.href = URL.createObjectURL(blob);
                 a.download = "site_map.dxf";
                 a.click();
             };
@@ -78,13 +101,9 @@
 
         function createDxf(xml) {
             const nodes = {};
-            const xmlNodes = xml.getElementsByTagName("node");
-            for(let n of xmlNodes) nodes[n.getAttribute("id")] = { lat: n.getAttribute("lat"), lon: n.getAttribute("lon") };
-
+            for(let n of xml.getElementsByTagName("node")) nodes[n.getAttribute("id")] = { lat: n.getAttribute("lat"), lon: n.getAttribute("lon") };
             let content = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n";
-            const ways = xml.getElementsByTagName("way");
-            
-            for(let way of ways) {
+            for(let way of xml.getElementsByTagName("way")) {
                 const refs = way.getElementsByTagName("nd");
                 if (refs.length < 2) continue;
                 content += "0\nPOLYLINE\n8\nOSM_LAYER\n66\n1\n";
@@ -94,8 +113,7 @@
                 }
                 content += "0\nSEQEND\n";
             }
-            content += "0\nENDSEC\n0\nEOF";
-            return content;
+            return content + "0\nENDSEC\n0\nEOF";
         }
     </script>
 </body>
