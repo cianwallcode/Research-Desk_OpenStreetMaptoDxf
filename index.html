@@ -1,14 +1,20 @@
-import init, { osm_to_dxf } from './osm_wasm.js';
-
-async function startProject() {
-    await init();
-    const response = await fetch('https://api.openstreetmap.org/api/0.6/map?bbox=-0.1,51.5,-0.09,51.51');
-    const osmData = await response.text();
-    const dxfContent = osm_to_dxf(osmData);
-    
-    const blob = new Blob([dxfContent], { type: 'application/dxf' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = "site_map.dxf";
-    link.click();
-}
+<!DOCTYPE html>
+<html lang="en" style="background: white; color: orange;">
+<body style="min-height: 150vh; display: flex; flex-direction: column; color: orange;">
+    <nav style="padding: 1rem; border-bottom: 2px solid orange;">
+        <a href="/" style="color: orange; font-weight: bold; text-decoration: none;">Logo</a>
+        <a href="/" style="color: orange; margin-left: 10px;">Home</a>
+        <a href="/inventory.html" style="color: orange; margin-left: 10px;">Inventory</a>
+        <a href="/comparison.html" style="color: orange; margin-left: 10px;">Comparison</a>
+    </nav>
+    <main style="flex: 1; padding: 2rem;">
+        <button id="startBtn" style="background: orange; color: white; padding: 10px 20px; border: none;">Start project</button>
+        <p style="font-size: 0.8rem; margin-top: 10px;">DXF used: DWG is proprietary format.</p>
+    </main>
+    <footer style="padding: 1rem; border-top: 2px solid orange;">
+        <p>Copyright © 2026. All rights reserved.</p>
+        <p>Contact: info@site.com</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
