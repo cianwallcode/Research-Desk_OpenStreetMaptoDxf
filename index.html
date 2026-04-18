@@ -1,1 +1,14 @@
+import init, { osm_to_dxf } from './osm_wasm.js';
 
+async function startProject() {
+    await init();
+    const response = await fetch('https://api.openstreetmap.org/api/0.6/map?bbox=-0.1,51.5,-0.09,51.51');
+    const osmData = await response.text();
+    const dxfContent = osm_to_dxf(osmData);
+    
+    const blob = new Blob([dxfContent], { type: 'application/dxf' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = "site_map.dxf";
+    link.click();
+}
