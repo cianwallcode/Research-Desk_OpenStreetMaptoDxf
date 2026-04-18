@@ -1,20 +1,49 @@
 <!DOCTYPE html>
-<html lang="en" style="background: white; color: orange;">
-<body style="min-height: 150vh; display: flex; flex-direction: column; color: orange;">
-    <nav style="padding: 1rem; border-bottom: 2px solid orange;">
-        <a href="/" style="color: orange; font-weight: bold; text-decoration: none;">Logo</a>
-        <a href="/" style="color: orange; margin-left: 10px;">Home</a>
-        <a href="/inventory.html" style="color: orange; margin-left: 10px;">Inventory</a>
-        <a href="/comparison.html" style="color: orange; margin-left: 10px;">Comparison</a>
+<html lang="en">
+<head>
+    <style>
+        body { min-height: 150vh; display: flex; flex-direction: column; color: orange; background: white; margin: 0; }
+        nav { padding: 1rem; border-bottom: 2px solid orange; display: flex; gap: 10px; }
+        footer { padding: 1rem; border-top: 2px solid orange; margin-top: auto; }
+        .page { display: none; padding: 2rem; }
+        .active { display: block; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="#" onclick="showPage('home')">Logo</a>
+        <a href="#" onclick="showPage('home')">Home</a>
+        <a href="#" onclick="showPage('inventory')">Inventory</a>
+        <a href="#" onclick="showPage('comparison')">Comparison</a>
     </nav>
-    <main style="flex: 1; padding: 2rem;">
-        <button id="startBtn" style="background: orange; color: white; padding: 10px 20px; border: none;">Start project</button>
-        <p style="font-size: 0.8rem; margin-top: 10px;">DXF used: DWG is proprietary format.</p>
+
+    <main id="content">
+        <section id="home" class="page active">
+            <button id="startBtn">Start project</button>
+            <p>DXF used: DWG is proprietary format.</p>
+        </section>
+        <section id="inventory" class="page">
+            <h1>Inventory</h1>
+        </section>
+        <section id="comparison" class="page">
+            <h1>Comparison</h1>
+        </section>
     </main>
-    <footer style="padding: 1rem; border-top: 2px solid orange;">
+
+    <footer>
         <p>Copyright © 2026. All rights reserved.</p>
         <p>Contact: info@site.com</p>
     </footer>
-    <script src="script.js"></script>
+
+    <script>
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            alert("Exporting DXF file.");
+        });
+    </script>
 </body>
 </html>
