@@ -2,119 +2,136 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ResearchDesk | Site Converter</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23ff8c00' rx='20'/><text y='.9em' font-size='90' fill='white' font-family='sans-serif' font-weight='bold'>R</text><path d='M70 70 L90 70 L90 50 M90 70 L60 40' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <title>Solar Orientation + Shadow Simulation</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22black%22/><text x=%2230%22 y=%2270%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2260%22 fill=%22%23ff4500%22 text-anchor=%22middle%22>R</text><path d=%22M65 40 L85 40 L85 75 L65 75 Z M70 40 L70 30 L80 30 L80 40 Z M72 30 L75 22 L78 30 Z%22 fill=%22white%22/></svg>">
+    <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }
+    </script>
     <style>
-        :root { 
-            --accent: #ff8c00; 
-            --bg: #ffffff; 
-            --text: #1a1a1a; 
-            --subtle: #f4f4f4;
-            --border: #e0e0e0;
-        }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; min-height: 100vh; line-height: 1.6; }
-        
-        /* Nav */
-        nav { padding: 2rem 10%; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        nav a { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.05em; text-transform: uppercase; }
-        
-        /* Layout */
-        main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 4rem 10%; }
-        .card { width: 100%; max-width: 600px; padding: 3rem; background: #fff; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
-        
-        h1 { font-weight: 300; font-size: 2.5rem; margin-bottom: 2rem; color: #000; }
-        
-        /* Dropzone */
-        .drop-zone { border: 2px dashed var(--border); padding: 3rem; margin-bottom: 2rem; cursor: pointer; transition: all 0.3s ease; border-radius: 4px; color: #888; }
-        .drop-zone:hover { border-color: var(--accent); background: var(--subtle); }
-        .drop-zone.dragging { border-color: var(--accent); background: #fffaf0; }
-        
-        /* Button */
-        .btn { 
-            background: var(--accent); color: white; padding: 1rem 3rem; border: none; cursor: pointer; 
-            font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
-            display: block; margin: 0 auto; transition: opacity 0.2s;
-        }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
-        .btn:hover:not(:disabled) { opacity: 0.9; }
-
-        footer { padding: 2rem; text-align: center; color: #aaa; font-size: 0.75rem; letter-spacing: 0.1em; }
+        :root { --accent: #ff4500; --bg: #ffffff; }
+        body { margin: 0; font-family: 'Georgia', serif; color: #333; background: var(--bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        header { padding: 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+        .logo { cursor: pointer; font-weight: bold; font-size: 1.2rem; color: var(--accent); text-transform: uppercase; }
+        #main-container { flex: 1; position: relative; overflow-y: auto; }
+        #landing-page { position: absolute; z-index: 10; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #start-project { padding: 15px 30px; background: var(--accent); color: white; border: none; cursor: pointer; font-size: 1rem; }
+        #canvas-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        #controls { position: absolute; bottom: 20px; left: 20px; z-index: 5; background: rgba(255,255,255,0.9); padding: 15px; border: 1px solid #ddd; }
+        footer { padding: 10px; border-top: 1px solid #ddd; font-size: 10px; color: #777; text-align: center; }
     </style>
 </head>
 <body>
-    <nav>
-        <a href="/">ResearchDesk</a>
-        <div>
-            <a href="/" style="margin-right: 20px;">Home</a>
-            <a href="/">Inventory</a>
-        </div>
-    </nav>
+<header><div class="logo" onclick="location.reload()">SOLAR ORIENTATION + SHADOW SIMULATION</div></header>
+<div id="main-container">
+    <div id="landing-page">
+        <h1>SOLAR ORIENTATION + SHADOW SIMULATION</h1>
+        <button id="start-project">START PROJECT</button>
+    </div>
+    <div id="canvas-wrapper"></div>
+</div>
+<div id="controls" style="display: none;">
+    <button id="btn-soane">Soane Hall</button>
+    <button id="btn-tadoando">Tadoando Church</button>
+    <br><br>
+    <label>SOLAR TIME</label>
+    <input type="range" id="hour" min="8" max="17" step="0.01" value="10.5">
+</div>
+<footer>&copy; 2026 R4 / Solar Orientation Simulation | Contact: admin@solar-simulation.com</footer>
 
-    <main>
-        <div class="card">
-            <h1>Site Map Generator</h1>
-            <div class="drop-zone" id="dropZone">
-                <p>Drag & drop your .osm file here<br><span style="font-size: 0.8rem;">or click to select</span></p>
-                <input type="file" id="osmFile" accept=".osm" style="display: none;">
-            </div>
-            <button class="btn" id="convertBtn" disabled>Convert & Download</button>
-            <p id="status" style="margin-top: 1.5rem; font-size: 0.9rem; color: #666;"></p>
-        </div>
-    </main>
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-    <footer>
-        <p>Copyright © 2026. All rights reserved.</p>
-    </footer>
+    let scene, camera, renderer, controls, sun;
+    let modelGroup = new THREE.Group();
+    const container = document.getElementById('canvas-wrapper');
 
-    <script>
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('osmFile');
-        const convertBtn = document.getElementById('convertBtn');
-        const status = document.getElementById('status');
-        let selectedFile = null;
+    function init() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+        camera = new THREE.PerspectiveCamera(70, container.clientWidth / container.clientHeight, 0.1, 2000);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.shadowMap.enabled = true;
+        container.appendChild(renderer.domElement);
+        
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.minPolarAngle = Math.PI / 2.1;
+        controls.maxPolarAngle = Math.PI / 2.1;
+        
+        sun = new THREE.DirectionalLight(0xffffff, 2.5);
+        sun.castShadow = true;
+        sun.shadow.camera.left = -200; sun.shadow.camera.right = 200;
+        sun.shadow.camera.top = 200; sun.shadow.camera.bottom = -200;
+        sun.shadow.mapSize.set(2048, 2048);
+        scene.add(sun, new THREE.AmbientLight(0xffffff, 0.4));
+        scene.add(modelGroup);
 
-        dropZone.onclick = () => fileInput.click();
-        fileInput.onchange = (e) => handleFile(e.target.files[0]);
-        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragging'); };
-        dropZone.ondragleave = () => dropZone.classList.remove('dragging');
-        dropZone.ondrop = (e) => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); };
-
-        function handleFile(file) {
-            if (!file) return;
-            selectedFile = file;
-            status.textContent = "File ready: " + file.name;
-            convertBtn.disabled = false;
-        }
-
-        convertBtn.onclick = () => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const xml = new DOMParser().parseFromString(e.target.result, "text/xml");
-                const blob = new Blob([createDxf(xml)], {type: 'text/plain'});
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = "site_map.dxf";
-                a.click();
-            };
-            reader.readAsText(selectedFile);
+        document.getElementById('start-project').onclick = () => {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('controls').style.display = 'block';
+            switchModel('tadoando');
+            animate();
         };
 
-        function createDxf(xml) {
-            const nodes = {};
-            for(let n of xml.getElementsByTagName("node")) nodes[n.getAttribute("id")] = { lat: n.getAttribute("lat"), lon: n.getAttribute("lon") };
-            let content = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n";
-            for(let way of xml.getElementsByTagName("way")) {
-                const refs = way.getElementsByTagName("nd");
-                if (refs.length < 2) continue;
-                content += "0\nPOLYLINE\n8\nOSM_LAYER\n66\n1\n";
-                for(let ref of refs) {
-                    const node = nodes[ref.getAttribute("ref")];
-                    if(node) content += `0\nVERTEX\n10\n${node.lon}\n20\n${node.lat}\n`;
-                }
-                content += "0\nSEQEND\n";
-            }
-            return content + "0\nENDSEC\n0\nEOF";
+        document.getElementById('btn-soane').addEventListener('click', () => switchModel('soane'));
+        document.getElementById('btn-tadoando').addEventListener('click', () => switchModel('tadoando'));
+    }
+
+    function switchModel(type) {
+        modelGroup.clear();
+        if(type === 'soane') {
+            camera.position.set(0, 1.7, 25);
+            controls.target.set(0, 15, 0);
+            buildSoaneHall();
+        } else {
+            camera.position.set(0, 1.7, 200); // Entrance
+            controls.target.set(0, 1.7, -300); // Facing far wall
+            buildTadoandoHall();
         }
-    </script>
+    }
+
+    function buildSoaneHall() {
+        const mat = new THREE.MeshStandardMaterial({ color: 0xeeeeee, side: THREE.DoubleSide });
+        for(let x of [-15, 15]) for(let z of [-15, 15]) {
+            const p = new THREE.Mesh(new THREE.BoxGeometry(10, 30, 10), mat);
+            p.position.set(x, 5, z);
+            modelGroup.add(p);
+        }
+    }
+
+    function buildTadoandoHall() {
+        const wallMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee, side: THREE.DoubleSide });
+        
+        // Define Cross-Hole Shape
+        const wallShape = new THREE.Shape();
+        wallShape.moveTo(-100, -50); wallShape.lineTo(100, -50); wallShape.lineTo(100, 50); wallShape.lineTo(-100, 50);
+        
+        const hole = new THREE.Path();
+        hole.moveTo(-10, 30); hole.lineTo(10, 30); hole.lineTo(10, 10); hole.lineTo(30, 10); hole.lineTo(30, -10); hole.lineTo(10, -10);
+        hole.lineTo(10, -30); hole.lineTo(-10, -30); hole.lineTo(-10, -10); hole.lineTo(-30, -10); hole.lineTo(-30, 10); hole.lineTo(-10, 10);
+        wallShape.holes.push(hole);
+
+        const wall = new THREE.Mesh(new THREE.ShapeGeometry(wallShape), wallMat);
+        wall.position.set(0, 50, -300);
+        wall.receiveShadow = true;
+        modelGroup.add(wall);
+        
+        // Add floor
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 600), new THREE.MeshStandardMaterial({color: 0xdddddd}));
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        modelGroup.add(floor);
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        const hr = document.getElementById('hour').value;
+        const angle = (hr - 12) * (Math.PI / 6);
+        sun.position.set(Math.sin(angle) * 500, 300, Math.cos(angle) * 500);
+        renderer.render(scene, camera);
+    }
+    init();
+</script>
 </body>
 </html>
