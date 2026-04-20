@@ -125,9 +125,8 @@
                     }, 2500);
 
                 } else {
-                    const errorText = await response.text();
                     statusDisplay.className = 'status-error';
-                    statusDisplay.innerText = `ERROR: Server failed to process the request. Details: ${errorText || 'Unknown data processing error.'}`;
+                    statusDisplay.innerText = "ERROR: Server failed to process the request.";
                     convertButton.disabled = false;
                 }
             } catch (error) {
