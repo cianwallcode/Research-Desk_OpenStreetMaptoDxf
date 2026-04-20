@@ -2,120 +2,145 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Research Desk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Desk | OSM to DXF Conversion</title>
+    <link rel="icon" type="image/png" href="path/to/research_desk_icon.png"> 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display&display=swap" rel="stylesheet">
     <style>
         :root {
-            --brand-orange: #ff4500;
+            --brand-orange: #ff4500; /* International Orange */
             --off-white: #fcfcfc;
-            --gray: #e0e0e0;
+            --gray-light: #e0e0e0;
             --text-dark: #333333;
         }
 
-        body { 
-            margin: 0; 
-            font-family: 'Playfair Display', serif; 
-            background-color: var(--off-white); 
-            color: var(--text-dark); 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh;
-        }
+        /* 3. Rationalist Minimalist CSS & Typography */
+        body { margin: 0; font-family: 'Playfair Display', serif; background-color: var(--off-white); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        nav { padding: 20px 50px; font-family: 'Inter', sans-serif; font-weight: 700; border-bottom: 1px solid var(--gray-light); display: flex; align-items: center; justify-content: space-between; }
+        
+        /* 4. Brand Identity: Scalable 'R' Logo rendered in #ff4500 */
+        .brand-wrapper { display: flex; align-items: center; cursor: pointer; text-decoration: none; color: inherit; }
+        .logo-r { width: 40px; height: 40px; background-color: var(--brand-orange); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-family: 'Inter', sans-serif; font-weight: 700; margin-right: 15px; border-radius: 2px; }
+        .brand-name { text-transform: uppercase; letter-spacing: 1px; font-size: 14px; }
 
-        nav { 
-            padding: 20px 50px; 
-            font-family: 'Inter', sans-serif; 
-            font-weight: 700; 
-            border-bottom: 1px solid var(--gray); 
-            display: flex;
-            align-items: center;
-        }
+        main { flex: 1; padding: 100px 50px; max-width: 800px; margin: 0 auto; text-align: center; }
+        h1 { font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 3px; font-size: 2rem; margin-bottom: 10px; }
+        
+        /* 5. Interactive Element & Call to Action */
+        .upload-container { background-color: white; border: 1px solid var(--gray-light); padding: 40px; margin-top: 30px; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .file-input { display: none; }
+        .file-label { display: block; padding: 15px; border: 2px dashed var(--gray-light); color: #666; cursor: pointer; margin-bottom: 20px; font-family: 'Inter', sans-serif; }
+        .file-label:hover { border-color: var(--brand-orange); color: var(--brand-orange); }
 
-        .logo {
-            width: 40px;
-            height: 40px;
-            background-color: var(--brand-orange);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            cursor: pointer;
-            margin-right: 15px;
-        }
+        .btn-convert { background-color: var(--brand-orange); color: white; padding: 18px 40px; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-size: 14px; transition: opacity 0.2s; border-radius: 2px; }
+        .btn-convert:hover { opacity: 0.9; }
+        .btn-convert:disabled { background-color: var(--gray-light); cursor: not-allowed; opacity: 1; }
 
-        main { 
-            flex: 1; 
-            padding: 100px 50px; 
-            text-align: center; 
-            overflow-y: auto; 
-        }
+        /* 6. Technical Explanation Text */
+        .explanation-text { margin-top: 50px; text-align: left; font-size: 0.95rem; line-height: 1.7; color: #555; }
+        .explanation-text p { margin-bottom: 15px; }
+        .highlight { font-weight: 700; color: var(--text-dark); }
 
-        h1 { font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
-
-        .btn { 
-            background-color: var(--brand-orange); 
-            color: white; 
-            padding: 15px 30px; 
-            border: none; 
-            cursor: pointer; 
-            margin-top: 20px; 
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-        }
-
-        .btn:hover { opacity: 0.9; }
-
-        footer { 
-            padding: 20px; 
-            text-align: center; 
-            font-family: 'Inter', sans-serif; 
-            font-size: 12px; 
-            color: #888;
-            border-top: 1px solid var(--gray);
-        }
+        footer { padding: 30px 50px; border-top: 1px solid var(--gray-light); font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px; text-align: center; }
+        
+        #status-display { margin-top: 25px; font-family: 'Inter', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; }
+        .status-processing { color: #666; }
+        .status-success { color: #28a745; }
+        .status-error { color: #dc3545; }
     </style>
 </head>
 <body>
     <nav>
-        <div class="logo" onclick="window.location.href='/'">R</div>
-        <span>RESEARCH DESK</span>
+        <a href="/" class="brand-wrapper">
+            <div class="logo-r">R</div>
+            <span class="brand-name">RESEARCH DESK</span>
+        </a>
     </nav>
     <main>
-        <h1>CONVERSION TOOL</h1>
-        <form id="uploadForm">
-            <input type="file" id="fileInput" accept=".osm" required>
-            <br>
-            <button type="button" class="btn" onclick="uploadFile()">START PROJECT</button>
-        </form>
-        <div id="status" style="margin-top:20px; font-family: 'Inter', sans-serif;"></div>
+        <h1>GEOSPATIAL CONVERTER</h1>
+        <div class="upload-container">
+            <form id="osmUploadForm">
+                <label for="fileUploadInput" class="file-label" id="fileLabelText">
+                    Choose or drag .osm file
+                </label>
+                <input type="file" id="fileUploadInput" class="file-input" accept=".osm" required onchange="updateFileNameDisplay()">
+                
+                <button type="button" id="convertButton" class="btn-convert" onclick="executeConversion()">
+                    CONVERT OSM TO DXF
+                </button>
+            </form>
+            <div id="status-display"></div>
+        </div>
+        
+        <div class="explanation-text">
+            <p>Our commitment to data integrity necessitates strict adherence to industry-standard security protocols. Native <span class="highlight">DWG (Drawing)</span> file creation utilizes proprietary, closed-source Autodesk technology. Generating these files through unauthorized third-party scripts introduces unacceptable risks regarding file corruption and metadata validation.</p>
+            <p>Consequently, <span class="highlight">AutoCAD</span> software is uniquely authorized to compile final <span class="highlight">DWG</span> production files. Our Research Desk converter utilizes the stable, open-source `ezdxf` library to produce a precise, read-only <span class="highlight">DXF (Drawing Exchange Format)</span> file. This output ensures secure transmission and full visual fidelity; it must be imported locally into your authorized <span class="highlight">AutoCAD</span> session for conversion to a fully mutable <span class="highlight">DWG</span> project file.</p>
+        </div>
     </main>
     <footer>
-        <p>&copy; 2026 RESEARCH DESK | CONTACT: SUPPORT@RESEARCHDESK.COM | ALL RIGHTS RESERVED</p>
+        <p>&copy; 2026 RESEARCH DESK | CONTACT: SUPPORT@RESEARCHDESK.COM | ALL RIGHTS RESERVED | CONFIDENTIALITY NOTICE: DATA REMAINS EPHEMERAL AND SECURE DURING PROCESSING.</p>
     </footer>
 
     <script>
-        async function uploadFile() {
-            const fileInput = document.getElementById('fileInput');
-            const status = document.getElementById('status');
-            if (fileInput.files.length === 0) return alert("Select a file");
+        function updateFileNameDisplay() {
+            const input = document.getElementById('fileUploadInput');
+            const label = document.getElementById('fileLabelText');
+            label.innerText = input.files.length > 0 ? input.files[0].name : "Choose or drag .osm file";
+            label.style.borderColor = input.files.length > 0 ? "#ff4500" : "#e0e0e0";
+        }
 
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
+        async function executeConversion() {
+            const fileInput = document.getElementById('fileUploadInput');
+            const statusDisplay = document.getElementById('status-display');
+            const convertButton = document.getElementById('convertButton');
 
-            status.innerText = "Processing...";
-            const response = await fetch('/', { method: 'POST', body: formData });
+            if (fileInput.files.length === 0) {
+                alert("ERR: PLEASE SELECT A VALID .OSM FILE BEFORE INITIATING CONVERSION.");
+                return;
+            }
 
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = "converted_map.dxf";
-                a.click();
-                status.innerText = "Conversion Complete.";
-            } else {
-                status.innerText = "Error processing file.";
+            const osmFileData = new FormData();
+            osmFileData.append('file', fileInput.files[0]);
+
+            convertButton.disabled = true;
+            statusDisplay.className = 'status-processing';
+            statusDisplay.innerText = "Processing vector data... This may take several moments for complex maps.";
+
+            try {
+                // Communicating with the Flask server endpoint ('/')
+                const response = await fetch('/', { method: 'POST', body: osmFileData });
+
+                if (response.ok) {
+                    statusDisplay.className = 'status-success';
+                    statusDisplay.innerText = "Conversion Successful. Initiating DXF Download.";
+                    
+                    const dxfBlob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(dxfBlob);
+                    
+                    const anchorLink = document.createElement('a');
+                    anchorLink.href = downloadUrl;
+                    // Provide a default filename
+                    anchorLink.download = "RESEARCH_DESK_MAP_EXPORT.dxf";
+                    document.body.appendChild(anchorLink); // Required for Firefox
+                    anchorLink.click();
+                    document.body.removeChild(anchorLink); // Cleanup
+
+                    // Reset display after brief delay
+                    setTimeout(() => {
+                        convertButton.disabled = false;
+                        statusDisplay.innerText = "";
+                    }, 2500);
+
+                } else {
+                    const errorText = await response.text();
+                    statusDisplay.className = 'status-error';
+                    statusDisplay.innerText = `ERROR: Server failed to process the request. Details: ${errorText || 'Unknown data processing error.'}`;
+                    convertButton.disabled = false;
+                }
+            } catch (error) {
+                statusDisplay.className = 'status-error';
+                statusDisplay.innerText = `CRITICAL NETWORK ERROR: ${error.message}`;
+                convertButton.disabled = false;
             }
         }
     </script>
